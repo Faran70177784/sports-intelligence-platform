@@ -17,6 +17,7 @@ import streamlit as st
 from core.navigation import Router
 from shared.components import Sidebar
 from shared.styles import load_css
+from core.database import initialize_database
 
 
 def configure_application() -> None:
@@ -39,6 +40,8 @@ def initialize_application() -> None:
 
     load_css()
 
+
+    initialize_database()
 
 def main() -> None:
     """
