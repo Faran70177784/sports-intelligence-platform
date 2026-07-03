@@ -18,11 +18,9 @@ class Sidebar:
     """Application sidebar."""
 
     def render(self) -> str:
-        """Render sidebar and return selected route."""
+        """Render sidebar."""
 
-        st.sidebar.title(
-            f"{theme.LOGO} {theme.APP_NAME}"
-        )
+        st.sidebar.title(theme.APP_NAME)
 
         st.sidebar.caption(
             f"Version {theme.VERSION}"

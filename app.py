@@ -1,34 +1,59 @@
 """
 Sports Intelligence Platform
 
-Application Entry Point
+File: app.py
+Author: Syed Faran Ali
+
+Description:
+Main application entry point.
+Initializes the Streamlit application,
+loads the global theme,
+renders the sidebar,
+and routes the user to the selected module.
 """
 
 import streamlit as st
 
-from shared.styles import load_css
+from core.navigation import Router
 from shared.components import Sidebar
+from shared.styles import load_css
 
 
-def main() -> None:
-    """Start the application."""
+def configure_application() -> None:
+    """
+    Configure global Streamlit settings.
+    """
 
     st.set_page_config(
         page_title="Sports Intelligence Platform",
-        page_icon="🏆",
+        page_icon=None,
         layout="wide",
         initial_sidebar_state="expanded",
     )
 
+
+def initialize_application() -> None:
+    """
+    Initialize application resources.
+    """
+
     load_css()
+
+
+def main() -> None:
+    """
+    Application entry point.
+    """
+
+    configure_application()
+
+    initialize_application()
 
     sidebar = Sidebar()
 
-    selected = sidebar.render()
+    selected_route = sidebar.render()
 
-    st.title("Sports Intelligence Platform")
-
-    st.write(f"Current Module: **{selected}**")
+    Router.navigate(selected_route)
 
 
 if __name__ == "__main__":
