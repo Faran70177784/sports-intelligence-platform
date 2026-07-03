@@ -1,0 +1,4 @@
+2026-07-03 06:23:59 | INFO     | __main__:<module>:4 | Application started successfully.
+2026-07-03 06:23:59 | WARNING  | __main__:<module>:5 | This is a warning.
+2026-07-03 06:23:59 | ERROR    | __main__:<module>:6 | This is an error.
+2026-07-03 06:23:59 | SUCCESS  | __main__:<module>:7 | Logger is working correctly!
