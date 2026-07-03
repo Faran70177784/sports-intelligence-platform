@@ -1,0 +1,19 @@
+database:
+
+  engine: sqlite
+
+  sqlite:
+
+    path: data/sip.db
+
+  postgresql:
+
+    host: localhost
+
+    port: 5432
+
+    database: sports_intelligence
+
+    username: postgres
+
+    password: change_me

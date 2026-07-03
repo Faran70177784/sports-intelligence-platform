@@ -1,0 +1,17 @@
+application:
+  name: "Sports Intelligence Platform"
+  short_name: "SIP"
+
+  version: "0.1.0"
+
+  environment: development
+
+  debug: true
+
+  company: "Syed Faran Ali"
+
+  timezone: UTC
+
+  language: en
+
+  default_page: Dashboard

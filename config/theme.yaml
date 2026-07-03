@@ -1,0 +1,19 @@
+theme:
+
+  primary_color: "#2563EB"
+
+  secondary_color: "#475569"
+
+  success_color: "#16A34A"
+
+  warning_color: "#D97706"
+
+  error_color: "#DC2626"
+
+  background: "#F8FAFC"
+
+  surface: "#FFFFFF"
+
+  border_radius: 10
+
+  spacing: 8
