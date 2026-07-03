@@ -2,3 +2,6 @@
 2026-07-03 06:23:59 | WARNING  | __main__:<module>:5 | This is a warning.
 2026-07-03 06:23:59 | ERROR    | __main__:<module>:6 | This is an error.
 2026-07-03 06:23:59 | SUCCESS  | __main__:<module>:7 | Logger is working correctly!
+2026-07-03 06:31:47 | INFO     | database.database:<module>:25 | Initializing database engine...
+2026-07-03 06:31:47 | INFO     | database.database:create_database:61 | Creating database tables...
+2026-07-03 06:31:47 | SUCCESS  | database.database:create_database:65 | Database initialized successfully.
