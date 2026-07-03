@@ -1,9 +1,21 @@
-.venv/
+# Runtime generated exports
+exports/*
+!exports/.gitkeep
+
+# Logs
+logs/*
+!logs/.gitkeep
+
+# Database
+database/*.db
+
+# Python cache
 __pycache__/
-*.pyc
+*.py[cod]
+
+# Virtual environment
+.venv/
+venv/
+
+# Environment variables
 .env
-.streamlit/secrets.toml
-*.db
-.DS_Store
-.vscode/
-.idea/
