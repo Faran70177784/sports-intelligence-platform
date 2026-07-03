@@ -1,41 +1,34 @@
 """
-Sports Analytics Dashboard Platform
+Sports Intelligence Platform
 
 Application Entry Point
 """
 
-from components.footer import render as render_footer
-from components.header import render as render_header
-from components.sidebar import render as render_sidebar
-from database.database import create_database
-from pages.home import render as render_home
-from utils.logger import logger
+import streamlit as st
+
+from shared.styles import load_css
+from shared.components import Sidebar
 
 
-def initialize():
-    """
-    Initialize the application.
-    """
+def main() -> None:
+    """Start the application."""
 
-    logger.info("Starting application...")
+    st.set_page_config(
+        page_title="Sports Intelligence Platform",
+        page_icon="🏆",
+        layout="wide",
+        initial_sidebar_state="expanded",
+    )
 
-    create_database()
+    load_css()
 
+    sidebar = Sidebar()
 
-def main():
-    """
-    Main application.
-    """
+    selected = sidebar.render()
 
-    render_header()
+    st.title("Sports Intelligence Platform")
 
-    initialize()
-
-    render_sidebar()
-
-    render_home()
-
-    render_footer()
+    st.write(f"Current Module: **{selected}**")
 
 
 if __name__ == "__main__":
