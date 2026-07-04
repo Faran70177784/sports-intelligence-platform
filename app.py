@@ -6,18 +6,21 @@ Author: Syed Faran Ali
 
 Description:
 Main application entry point.
-Initializes the Streamlit application,
-loads the global theme,
-renders the sidebar,
-and routes the user to the selected module.
+
+Configures the Streamlit application,
+initializes resources,
+handles authentication,
+and renders the dashboard.
 """
 
 import streamlit as st
 
+from core.database import initialize_database
 from core.navigation import Router
+from services.authentication_service import AuthenticationService
+from shared.components import LoginForm
 from shared.components import Sidebar
 from shared.styles import load_css
-from core.database import initialize_database
 
 
 def configure_application() -> None:
@@ -27,7 +30,7 @@ def configure_application() -> None:
 
     st.set_page_config(
         page_title="Sports Intelligence Platform",
-        page_icon=None,
+        page_icon="🏆",
         layout="wide",
         initial_sidebar_state="expanded",
     )
@@ -40,8 +43,20 @@ def initialize_application() -> None:
 
     load_css()
 
-
     initialize_database()
+
+
+def render_application() -> None:
+    """
+    Render authenticated application.
+    """
+
+    sidebar = Sidebar()
+
+    selected_route = sidebar.render()
+
+    Router.navigate(selected_route)
+
 
 def main() -> None:
     """
@@ -52,11 +67,17 @@ def main() -> None:
 
     initialize_application()
 
-    sidebar = Sidebar()
+    auth = AuthenticationService()
 
-    selected_route = sidebar.render()
+    if not auth.is_authenticated():
 
-    Router.navigate(selected_route)
+        login = LoginForm()
+
+        login.render()
+
+        return
+
+    render_application()
 
 
 if __name__ == "__main__":
