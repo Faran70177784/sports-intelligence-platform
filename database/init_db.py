@@ -1,20 +1,23 @@
 """
-Initialize all database tables.
+Database initialization.
+
+Creates all registered SQLAlchemy tables.
 """
 
 from database.base import Base
 from database.session import engine
 
-# Register all SQLAlchemy models
-from database.models import Event
-from database.models import Match
-from database.models import Player
-from database.models import Team
-from database.models import User
+# Register all models
+import database.models  # noqa: F401
 
 
 def initialize_database() -> None:
+    """
+    Create all database tables.
+    """
+
     Base.metadata.create_all(bind=engine)
+
     print("Database initialized successfully.")
 
 

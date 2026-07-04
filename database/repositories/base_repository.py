@@ -1,11 +1,10 @@
 """
 Generic repository.
 
-Provides reusable CRUD operations for SQLAlchemy models.
+Reusable CRUD operations for SQLAlchemy models.
 """
 
 from typing import Generic
-from typing import List
 from typing import Optional
 from typing import Type
 from typing import TypeVar
@@ -24,16 +23,19 @@ class BaseRepository(Generic[ModelType]):
         self,
         db: Session,
         model: Type[ModelType],
-    ):
+    ) -> None:
 
         self.db = db
         self.model = model
 
-    def get_all(self) -> List[ModelType]:
+    def get_all(self) -> list[ModelType]:
 
         return self.db.query(self.model).all()
 
-    def get_by_id(self, object_id: int) -> Optional[ModelType]:
+    def get_by_id(
+        self,
+        object_id: int,
+    ) -> Optional[ModelType]:
 
         return (
             self.db.query(self.model)
@@ -41,15 +43,21 @@ class BaseRepository(Generic[ModelType]):
             .first()
         )
 
-    def create(self, obj: ModelType):
+    def create(
+        self,
+        obj: ModelType,
+    ) -> ModelType:
 
         self.db.add(obj)
-        self.db.commit()
+        self.db.flush()
         self.db.refresh(obj)
 
         return obj
 
-    def delete(self, obj: ModelType):
+    def delete(
+        self,
+        obj: ModelType,
+    ) -> None:
 
         self.db.delete(obj)
-        self.db.commit()
+        self.db.flush()
