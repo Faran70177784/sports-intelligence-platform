@@ -6,11 +6,17 @@ Author: Syed Faran Ali
 
 Description:
 Dashboard module for the Sports Intelligence Platform.
-Displays executive KPIs and recent activity.
+Displays executive KPIs, recent activity, quick actions,
+and system information.
 """
 
 import streamlit as st
 
+from shared.components import (
+    ActivityCard,
+    KPICard,
+    SectionTitle,
+)
 from shared.layouts import AppLayout
 
 
@@ -19,71 +25,66 @@ def render() -> None:
     Render the Dashboard page.
     """
 
-    # ------------------------------------------------------------------
+    # ---------------------------------------------------------
     # Page Layout
-    # ------------------------------------------------------------------
+    # ---------------------------------------------------------
 
     AppLayout.begin(
         title="Dashboard",
         subtitle="Executive overview of the Sports Intelligence Platform."
     )
 
-    # ------------------------------------------------------------------
+    # ---------------------------------------------------------
     # Key Performance Indicators
-    # ------------------------------------------------------------------
+    # ---------------------------------------------------------
 
-    st.subheader("Key Performance Indicators")
+    SectionTitle.render("Key Performance Indicators")
 
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
-        st.metric(
-            label="Sports",
-            value="5",
-            delta=None
+        KPICard.render(
+            title="Sports",
+            value="5"
         )
 
     with col2:
-        st.metric(
-            label="Organizations",
-            value="0",
-            delta=None
+        KPICard.render(
+            title="Organizations",
+            value="0"
         )
 
     with col3:
-        st.metric(
-            label="Matches",
-            value="0",
-            delta=None
+        KPICard.render(
+            title="Matches",
+            value="0"
         )
 
     with col4:
-        st.metric(
-            label="Reports",
-            value="0",
-            delta=None
+        KPICard.render(
+            title="Reports",
+            value="0"
         )
 
     st.divider()
 
-    # ------------------------------------------------------------------
+    # ---------------------------------------------------------
     # Recent Activity
-    # ------------------------------------------------------------------
+    # ---------------------------------------------------------
 
-    st.subheader("Recent Activity")
+    SectionTitle.render("Recent Activity")
 
-    st.info(
-        "No activity available.\n\n"
-        "Import sports data to begin using the platform."
+    ActivityCard.render(
+        "No activity available. Import sports data to begin using the platform."
     )
 
     st.divider()
 
-    # ------------------------------------------------------------------
+    # ---------------------------------------------------------
     # Quick Actions
-    # ------------------------------------------------------------------
+    # ---------------------------------------------------------
 
-    st.subheader("Quick Actions")
+    SectionTitle.render("Quick Actions")
 
     action_col1, action_col2, action_col3 = st.columns(3)
 
@@ -105,21 +106,23 @@ def render() -> None:
             use_container_width=True
         )
 
-    # ------------------------------------------------------------------
-    # System Information
-    # ------------------------------------------------------------------
-
     st.divider()
 
-    with st.expander("System Information", expanded=False):
+    # ---------------------------------------------------------
+    # System Information
+    # ---------------------------------------------------------
 
+    with st.expander(
+        "System Information",
+        expanded=False
+    ):
         st.write("Application Version: 0.3.0")
         st.write("Platform: Sports Intelligence Platform")
         st.write("Environment: Development")
         st.write("Status: Operational")
 
-    # ------------------------------------------------------------------
-    # Footer Layout
-    # ------------------------------------------------------------------
+    # ---------------------------------------------------------
+    # End Layout
+    # ---------------------------------------------------------
 
     AppLayout.end()

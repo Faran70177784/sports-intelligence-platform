@@ -1,4 +1,4 @@
-from database.database import create_database
+from database.db import create_database
 
 create_database()
 
