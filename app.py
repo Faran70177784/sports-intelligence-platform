@@ -16,10 +16,9 @@ and renders the dashboard.
 import streamlit as st
 
 from core.database import initialize_database
-from core.navigation import Router
 from services.authentication_service import AuthenticationService
 from shared.components import LoginForm
-from shared.components import Sidebar
+from shared.layouts import MainLayout
 from shared.styles import load_css
 
 
@@ -51,12 +50,7 @@ def render_application() -> None:
     Render authenticated application.
     """
 
-    sidebar = Sidebar()
-
-    selected_route = sidebar.render()
-
-    Router.navigate(selected_route)
-
+    MainLayout().render()
 
 def main() -> None:
     """
@@ -71,9 +65,7 @@ def main() -> None:
 
     if not auth.is_authenticated():
 
-        login = LoginForm()
-
-        login.render()
+        LoginForm().render()
 
         return
 

@@ -1,13 +1,8 @@
 """
-Generic repository.
-
-Reusable CRUD operations for SQLAlchemy models.
+Base repository providing common CRUD operations.
 """
 
-from typing import Generic
-from typing import Optional
-from typing import Type
-from typing import TypeVar
+from typing import Generic, TypeVar
 
 from sqlalchemy.orm import Session
 
@@ -16,17 +11,27 @@ ModelType = TypeVar("ModelType")
 
 class BaseRepository(Generic[ModelType]):
     """
-    Generic repository.
+    Generic repository for CRUD operations.
     """
 
     def __init__(
         self,
         db: Session,
-        model: Type[ModelType],
+        model: type[ModelType],
     ) -> None:
-
         self.db = db
         self.model = model
+
+    def create(
+        self,
+        entity: ModelType,
+    ) -> ModelType:
+
+        self.db.add(entity)
+        self.db.commit()
+        self.db.refresh(entity)
+
+        return entity
 
     def get_all(self) -> list[ModelType]:
 
@@ -34,30 +39,23 @@ class BaseRepository(Generic[ModelType]):
 
     def get_by_id(
         self,
-        object_id: int,
-    ) -> Optional[ModelType]:
+        entity_id: int,
+    ) -> ModelType | None:
 
         return (
             self.db.query(self.model)
-            .filter(self.model.id == object_id)
+            .filter(self.model.id == entity_id)
             .first()
         )
 
-    def create(
-        self,
-        obj: ModelType,
-    ) -> ModelType:
+    def update(self) -> None:
 
-        self.db.add(obj)
-        self.db.flush()
-        self.db.refresh(obj)
-
-        return obj
+        self.db.commit()
 
     def delete(
         self,
-        obj: ModelType,
+        entity: ModelType,
     ) -> None:
 
-        self.db.delete(obj)
-        self.db.flush()
+        self.db.delete(entity)
+        self.db.commit()

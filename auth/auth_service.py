@@ -38,6 +38,8 @@ class AuthenticationService:
             ):
                 return None
 
+            db.expunge(user)
+            
             return user
 
     def create_user(

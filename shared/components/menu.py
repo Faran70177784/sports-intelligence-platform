@@ -22,20 +22,58 @@ class MenuItem:
 
 MENU = [
 
-    MenuItem("Dashboard", "📊", "dashboard"),
+    MenuItem(
+        "Dashboard",
+        "📊",
+        "dashboard",
+    ),
 
-    MenuItem("Analytics", "📈", "analytics"),
+    MenuItem(
+        "Analytics",
+        "📈",
+        "analytics",
+    ),
 
-    MenuItem("AI Intelligence", "🤖", "ai"),
+    MenuItem(
+        "AI Intelligence",
+        "🤖",
+        "ai",
+    ),
 
-    MenuItem("Data Import", "📥", "data_import"),
+    MenuItem(
+        "Data Import",
+        "📥",
+        "data_import",
+    ),
 
-    MenuItem("Reports", "📄", "reports"),
+    MenuItem(
+        "Reports",
+        "📄",
+        "reports",
+    ),
 
-    MenuItem("Organizations", "🏢", "organizations"),
+    MenuItem(
+        "Organizations",
+        "🏢",
+        "organizations",
+    ),
 
-    MenuItem("Administration", "🛠", "administration"),
+    MenuItem(
+        "Teams",
+        "👥",
+        "teams",
+    ),
 
-    MenuItem("Settings", "⚙", "settings"),
+    MenuItem(
+        "Administration",
+        "🛠",
+        "administration",
+    ),
+
+    MenuItem(
+        "Settings",
+        "⚙",
+        "settings",
+    ),
 
 ]

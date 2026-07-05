@@ -13,10 +13,10 @@ class LogoutButton:
 
         self.auth = AuthenticationService()
 
-    def render(self):
+    def render(self) -> None:
 
-        if st.button(
-            "Logout",
+        if st.sidebar.button(
+            "🚪 Logout",
             use_container_width=True,
         ):
 

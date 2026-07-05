@@ -1,8 +1,10 @@
 """
-Team model.
+Organization model.
+
+Represents a sports organization such as a club,
+federation, league, university, academy, or association.
 """
 
-from sqlalchemy import ForeignKey
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
@@ -12,15 +14,15 @@ from database.base import Base
 from database.models.audit import AuditMixin
 
 
-class Team(AuditMixin, Base):
-    __tablename__ = "teams"
+class Organization(AuditMixin, Base):
+    """Sports organization."""
 
-    id: Mapped[int] = mapped_column(
-        primary_key=True
-    )
+    __tablename__ = "organizations"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
 
     name: Mapped[str] = mapped_column(
-        String(120),
+        String(150),
         unique=True,
         nullable=False,
         index=True,
@@ -31,18 +33,13 @@ class Team(AuditMixin, Base):
         nullable=False,
     )
 
-    organization_id: Mapped[int] = mapped_column(
-        ForeignKey("organizations.id"),
+    organization_type: Mapped[str] = mapped_column(
+        String(50),
         nullable=False,
     )
 
-    organization = relationship(
-        "Organization",
-        back_populates="teams",
-    )
-
-    players = relationship(
-        "Player",
-        back_populates="team",
+    teams = relationship(
+        "Team",
+        back_populates="organization",
         cascade="all, delete-orphan",
     )

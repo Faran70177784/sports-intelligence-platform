@@ -12,6 +12,7 @@ from database.db import get_db
 from database.models import (
     Event,
     Match,
+    Organization,
     Player,
     Team,
     User,
@@ -19,9 +20,7 @@ from database.models import (
 
 
 def seed_database() -> None:
-    """
-    Seed the database with initial data.
-    """
+    """Seed the database."""
 
     security = SecurityManager()
 
@@ -30,6 +29,7 @@ def seed_database() -> None:
         # ==========================================================
         # Administrator
         # ==========================================================
+
         admin = (
             db.query(User)
             .filter(User.username == "admin")
@@ -37,6 +37,7 @@ def seed_database() -> None:
         )
 
         if admin is None:
+
             admin = User(
                 username="admin",
                 password=security.hash_password("admin123"),
@@ -46,30 +47,116 @@ def seed_database() -> None:
             db.add(admin)
 
         # ==========================================================
+        # Organizations
+        # ==========================================================
+
+        organization_data = [
+
+            (
+                "Manchester City FC",
+                "England",
+                "Club",
+            ),
+
+            (
+                "Liverpool FC",
+                "England",
+                "Club",
+            ),
+
+            (
+                "FC Barcelona",
+                "Spain",
+                "Club",
+            ),
+
+            (
+                "Real Madrid CF",
+                "Spain",
+                "Club",
+            ),
+
+        ]
+
+        organizations = {}
+
+        for name, country, organization_type in organization_data:
+
+            organization = (
+                db.query(Organization)
+                .filter(
+                    Organization.name == name
+                )
+                .first()
+            )
+
+            if organization is None:
+
+                organization = Organization(
+                    name=name,
+                    country=country,
+                    organization_type=organization_type,
+                )
+
+                db.add(organization)
+                db.flush()
+
+            organizations[name] = organization
+
+        # ==========================================================
         # Teams
         # ==========================================================
+
         team_data = [
-            ("Manchester City", "England"),
-            ("Liverpool", "England"),
-            ("Barcelona", "Spain"),
-            ("Real Madrid", "Spain"),
+
+            (
+                "Manchester City",
+                "England",
+                "Manchester City FC",
+            ),
+
+            (
+                "Liverpool",
+                "England",
+                "Liverpool FC",
+            ),
+
+            (
+                "Barcelona",
+                "Spain",
+                "FC Barcelona",
+            ),
+
+            (
+                "Real Madrid",
+                "Spain",
+                "Real Madrid CF",
+            ),
+
         ]
 
         teams = {}
 
-        for name, country in team_data:
+        for name, country, organization_name in team_data:
 
             team = (
                 db.query(Team)
-                .filter(Team.name == name)
+                .filter(
+                    Team.name == name
+                )
                 .first()
             )
 
             if team is None:
+
                 team = Team(
                     name=name,
                     country=country,
+                    organization=organizations[
+                        organization_name
+                    ],
                 )
+
                 db.add(team)
                 db.flush()
 
@@ -78,16 +165,56 @@ def seed_database() -> None:
         # ==========================================================
         # Players
         # ==========================================================
+
         player_data = [
 
-            ("Erling Haaland", "Forward", "Manchester City"),
-            ("Kevin De Bruyne", "Midfielder", "Manchester City"),
-            ("Mohamed Salah", "Forward", "Liverpool"),
-            ("Virgil van Dijk", "Defender", "Liverpool"),
-            ("Robert Lewandowski", "Forward", "Barcelona"),
-            ("Pedri", "Midfielder", "Barcelona"),
-            ("Jude Bellingham", "Midfielder", "Real Madrid"),
-            ("Vinicius Junior", "Forward", "Real Madrid"),
+            (
+                "Erling Haaland",
+                "Forward",
+                "Manchester City",
+            ),
+
+            (
+                "Kevin De Bruyne",
+                "Midfielder",
+                "Manchester City",
+            ),
+
+            (
+                "Mohamed Salah",
+                "Forward",
+                "Liverpool",
+            ),
+
+            (
+                "Virgil van Dijk",
+                "Defender",
+                "Liverpool",
+            ),
+
+            (
+                "Robert Lewandowski",
+                "Forward",
+                "Barcelona",
+            ),
+
+            (
+                "Pedri",
+                "Midfielder",
+                "Barcelona",
+            ),
+
+            (
+                "Jude Bellingham",
+                "Midfielder",
+                "Real Madrid",
+            ),
+
+            (
+                "Vinicius Junior",
+                "Forward",
+                "Real Madrid",
+            ),
 
         ]
 
@@ -97,11 +224,14 @@ def seed_database() -> None:
 
             player = (
                 db.query(Player)
-                .filter(Player.full_name == full_name)
+                .filter(
+                    Player.full_name == full_name
+                )
                 .first()
             )
 
             if player is None:
+
                 player = Player(
                     full_name=full_name,
                     position=position,
@@ -116,6 +246,7 @@ def seed_database() -> None:
         # ==========================================================
         # Match
         # ==========================================================
+
         match = db.query(Match).first()
 
         if match is None:
@@ -130,39 +261,49 @@ def seed_database() -> None:
             db.flush()
 
         # ==========================================================
-        # Match Events
+        # Events
         # ==========================================================
+
         if db.query(Event).count() == 0:
 
-            events = [
+            db.add_all(
 
-                Event(
-                    match=match,
-                    player=players["Erling Haaland"],
-                    minute=12,
-                    event_type="Goal",
-                ),
+                [
 
-                Event(
-                    match=match,
-                    player=players["Mohamed Salah"],
-                    minute=39,
-                    event_type="Goal",
-                ),
+                    Event(
+                        match=match,
+                        player=players[
+                            "Erling Haaland"
+                        ],
+                        minute=12,
+                        event_type="Goal",
+                    ),
 
-                Event(
-                    match=match,
-                    player=players["Kevin De Bruyne"],
-                    minute=72,
-                    event_type="Assist",
-                ),
+                    Event(
+                        match=match,
+                        player=players[
+                            "Mohamed Salah"
+                        ],
+                        minute=39,
+                        event_type="Goal",
+                    ),
 
-            ]
+                    Event(
+                        match=match,
+                        player=players[
+                            "Kevin De Bruyne"
+                        ],
+                        minute=72,
+                        event_type="Assist",
+                    ),
 
-            db.add_all(events)
+                ]
+
+            )
 
     print("Database seeded successfully.")
 
 
 if __name__ == "__main__":
+
     seed_database()
