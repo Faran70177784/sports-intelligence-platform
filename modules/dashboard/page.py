@@ -6,16 +6,21 @@ Author: Syed Faran Ali
 
 Description:
 Dashboard module for the Sports Intelligence Platform.
-Displays executive KPIs, analytics, recent activity,
-quick actions, and system information.
+Displays executive KPIs, analytics, filters,
+recent activity and quick actions.
 """
 
 import streamlit as st
 
 from services.analytics_service import AnalyticsService
+from services.match_service import MatchService
+from services.organization_service import OrganizationService
+from services.team_service import TeamService
+
 from shared.components import (
     ActivityCard,
     AnalyticsCharts,
+    DashboardFilters,
     KPICard,
     SectionTitle,
 )
@@ -24,25 +29,52 @@ from shared.layouts import AppLayout
 
 analytics_service = AnalyticsService()
 
+organization_service = OrganizationService()
+
+team_service = TeamService()
+
+match_service = MatchService()
+
 
 def render() -> None:
     """
-    Render the Dashboard page.
+    Render Dashboard page.
     """
 
     AppLayout.begin(
         title="Dashboard",
-        subtitle="Executive overview of the Sports Intelligence Platform.",
+        subtitle="Executive overview of the Sports Intelligence Platform."
     )
 
     # ---------------------------------------------------------
-    # Dashboard Statistics
+    # Load Dashboard Data
     # ---------------------------------------------------------
 
-    stats = analytics_service.dashboard_statistics()
+    analytics = analytics_service.dashboard_statistics()
+
+    organizations = organization_service.get_all()
+
+    teams = team_service.get_all()
+
+    matches = match_service.get_all()
+
+    organization_options = [
+        organization.name
+        for organization in organizations
+    ]
+
+    team_options = [
+        team.name
+        for team in teams
+    ]
+
+    match_options = [
+        f"{match.home.name} vs {match.away.name}"
+        for match in matches
+    ]
 
     # ---------------------------------------------------------
-    # Key Performance Indicators
+    # KPI Cards
     # ---------------------------------------------------------
 
     SectionTitle.render("Key Performance Indicators")
@@ -53,84 +85,86 @@ def render() -> None:
 
         KPICard.render(
             title="Organizations",
-            value=stats["organizations"],
+            value=str(
+                analytics["organizations"]
+            ),
         )
 
     with col2:
 
         KPICard.render(
             title="Teams",
-            value=stats["teams"],
+            value=str(
+                analytics["teams"]
+            ),
         )
 
     with col3:
 
         KPICard.render(
             title="Players",
-            value=stats["players"],
+            value=str(
+                analytics["players"]
+            ),
         )
 
     with col4:
 
         KPICard.render(
             title="Matches",
-            value=stats["matches"],
+            value=str(
+                analytics["matches"]
+            ),
         )
 
     st.divider()
 
     # ---------------------------------------------------------
-    # Analytics
+    # Dashboard Filters
     # ---------------------------------------------------------
 
-    SectionTitle.render("Analytics")
+    filters = DashboardFilters.render(
+        organizations=organization_options,
+        teams=team_options,
+        matches=match_options,
+    )
 
-    event_data = analytics_service.event_distribution()
-    team_data = analytics_service.players_per_team()
+    st.divider()
 
-    left, right = st.columns(2)
+    # ---------------------------------------------------------
+    # Analytics Charts
+    # ---------------------------------------------------------
 
-    with left:
+    SectionTitle.render(
+        "Analytics Overview"
+    )
+
+    col1, col2 = st.columns(2)
+
+    with col1:
 
         AnalyticsCharts.pie_chart(
-            event_data,
-            title="Event Distribution",
+            data=[
+                ("Organizations", analytics["organizations"]),
+                ("Teams", analytics["teams"]),
+                ("Players", analytics["players"]),
+                ("Matches", analytics["matches"]),
+            ],
+            title="Platform Data Distribution",
         )
 
-    with right:
+    with col2:
 
         AnalyticsCharts.bar_chart(
-            team_data,
-            title="Players per Team",
-            x_title="Team",
-            y_title="Players",
-        )
-
-    st.divider()
-
-    # ---------------------------------------------------------
-    # Top Scorers
-    # ---------------------------------------------------------
-
-    SectionTitle.render("Top Scorers")
-
-    scorers = analytics_service.top_scorers()
-
-    if scorers:
-
-        st.dataframe(
-            {
-                "Player": [player for player, _ in scorers],
-                "Goals": [goals for _, goals in scorers],
-            },
-            use_container_width=True,
-            hide_index=True,
-        )
-
-    else:
-
-        st.info(
-            "No goals recorded."
+            data=[
+                ("Organizations", analytics["organizations"]),
+                ("Teams", analytics["teams"]),
+                ("Players", analytics["players"]),
+                ("Matches", analytics["matches"]),
+            ],
+            title="Platform Statistics",
+            x_title="Category",
+            y_title="Count",
         )
 
     st.divider()
@@ -139,10 +173,16 @@ def render() -> None:
     # Recent Activity
     # ---------------------------------------------------------
 
-    SectionTitle.render("Recent Activity")
+    SectionTitle.render(
+        "Recent Activity"
+    )
 
     ActivityCard.render(
-        "No activity available. Import sports data to begin using the platform."
+        (
+            "Dashboard filters are active. "
+            "Interactive analytics will be available "
+            "in the next update."
+        )
     )
 
     st.divider()
@@ -151,25 +191,27 @@ def render() -> None:
     # Quick Actions
     # ---------------------------------------------------------
 
-    SectionTitle.render("Quick Actions")
+    SectionTitle.render(
+        "Quick Actions"
+    )
 
-    action_col1, action_col2, action_col3 = st.columns(3)
+    col1, col2, col3 = st.columns(3)
 
-    with action_col1:
+    with col1:
 
         st.button(
             "Import Data",
             use_container_width=True,
         )
 
-    with action_col2:
+    with col2:
 
         st.button(
             "Open Analytics",
             use_container_width=True,
         )
 
-    with action_col3:
+    with col3:
 
         st.button(
             "Generate Report",
@@ -183,19 +225,39 @@ def render() -> None:
     # ---------------------------------------------------------
 
     with st.expander(
-        "System Information",
-        expanded=False,
+        "System Information"
     ):
 
-        st.write("Application Version: 0.3.0")
-        st.write("Platform: Sports Intelligence Platform")
-        st.write("Environment: Development")
-        st.write("Status: Operational")
+        st.write(
+            "Application Version: 0.4.0"
+        )
 
-        st.write(f"Organizations: {stats['organizations']}")
-        st.write(f"Teams: {stats['teams']}")
-        st.write(f"Players: {stats['players']}")
-        st.write(f"Matches: {stats['matches']}")
-        st.write(f"Events: {stats['events']}")
+        st.write(
+            "Platform: Sports Intelligence Platform"
+        )
+
+        st.write(
+            "Environment: Development"
+        )
+
+        st.write(
+            "Status: Operational"
+        )
+
+        st.write(
+            f"Organizations: {analytics['organizations']}"
+        )
+
+        st.write(
+            f"Teams: {analytics['teams']}"
+        )
+
+        st.write(
+            f"Players: {analytics['players']}"
+        )
+
+        st.write(
+            f"Matches: {analytics['matches']}"
+        )
 
     AppLayout.end()

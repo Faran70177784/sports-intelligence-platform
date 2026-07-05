@@ -11,10 +11,12 @@ from .organization_repository import OrganizationRepository
 from .player_repository import PlayerRepository
 from .team_repository import TeamRepository
 from .user_repository import UserRepository
+from .match_repository import MatchRepository
 
 __all__ = [
     "BaseRepository",
     "EventRepository",
+    "MatchRepository",
     "MatchRepository",
     "OrganizationRepository",
     "PlayerRepository",

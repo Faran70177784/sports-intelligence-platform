@@ -2,8 +2,6 @@
 Match business service.
 """
 
-from datetime import date
-
 from database.db import get_db
 from database.models import Match
 from database.repositories.match_repository import MatchRepository
@@ -25,48 +23,22 @@ class MatchService:
 
         with get_db() as db:
 
-            return MatchRepository(db).get_by_id(
-                match_id
-            )
+            return MatchRepository(db).get_by_id(match_id)
 
     def create(
         self,
-        home_team: int,
-        away_team: int,
-        match_date: date,
+        match: Match,
     ) -> Match:
-
-        if home_team == away_team:
-
-            raise ValueError(
-                "Home and Away teams must be different."
-            )
 
         with get_db() as db:
 
-            repository = MatchRepository(db)
-
-            match = Match(
-                home_team=home_team,
-                away_team=away_team,
-                match_date=match_date,
-            )
-
-            return repository.create(match)
+            return MatchRepository(db).create(match)
 
     def delete(
         self,
-        match_id: int,
+        match: Match,
     ) -> None:
 
         with get_db() as db:
 
-            repository = MatchRepository(db)
-
-            match = repository.get_by_id(
-                match_id
-            )
-
-            if match is not None:
-
-                repository.delete(match)
+            MatchRepository(db).delete(match)

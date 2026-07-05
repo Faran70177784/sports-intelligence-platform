@@ -18,22 +18,7 @@ class MatchRepository:
 
         self.db = db
 
-    def create(
-        self,
-        match: Match,
-    ) -> Match:
-
-        self.db.add(match)
-
-        self.db.commit()
-
-        self.db.refresh(match)
-
-        return match
-
-    def get_all(
-        self,
-    ) -> list[Match]:
+    def get_all(self) -> list[Match]:
 
         return (
             self.db.query(Match)
@@ -59,6 +44,19 @@ class MatchRepository:
             .filter(Match.id == match_id)
             .first()
         )
+
+    def create(
+        self,
+        match: Match,
+    ) -> Match:
+
+        self.db.add(match)
+
+        self.db.commit()
+
+        self.db.refresh(match)
+
+        return match
 
     def delete(
         self,

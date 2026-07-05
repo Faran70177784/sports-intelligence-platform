@@ -11,10 +11,12 @@ from .player_service import PlayerService
 from .team_service import TeamService
 from .dashboard_service import DashboardService
 from .analytics_service import AnalyticsService
+from .match_service import MatchService
 
 __all__ = [
     "AuthenticationService",
     "AuthorizationService",
+    "MatchService",
     "DashboardService",
     "AnalyticsService",
     "EventService",
