@@ -24,15 +24,19 @@ MENU = [
 
     MenuItem("Dashboard", "📊", "dashboard"),
 
-    MenuItem("Analytics", "📈", "analytics"),
-
-    MenuItem("AI Intelligence", "🤖", "ai"),
-
     MenuItem("Organizations", "🏢", "organizations"),
 
     MenuItem("Teams", "👥", "teams"),
 
     MenuItem("Players", "🏃", "players"),
+
+    MenuItem("Matches", "🏟️", "matches"),
+
+    MenuItem("Events", "⚽", "events"),
+
+    MenuItem("Analytics", "📈", "analytics"),
+
+    MenuItem("AI Intelligence", "🤖", "ai"),
 
     MenuItem("Data Import", "📥", "data_import"),
 

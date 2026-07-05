@@ -35,6 +35,16 @@ class Match(AuditMixin, Base):
         nullable=False,
     )
 
+    home = relationship(
+        "Team",
+        foreign_keys=[home_team],
+    )
+
+    away = relationship(
+        "Team",
+        foreign_keys=[away_team],
+    )
+
     events = relationship(
         "Event",
         back_populates="match",
