@@ -2,10 +2,12 @@
 Player repository.
 """
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import joinedload
 
 from database.models import Player
+from database.models import Team
 
 
 class PlayerRepository:
@@ -17,6 +19,10 @@ class PlayerRepository:
     ) -> None:
 
         self.db = db
+
+    # ---------------------------------------------------------
+    # CRUD
+    # ---------------------------------------------------------
 
     def create(
         self,
@@ -37,7 +43,9 @@ class PlayerRepository:
 
         return (
             self.db.query(Player)
-            .options(joinedload(Player.team))
+            .options(
+                joinedload(Player.team)
+            )
             .order_by(Player.full_name)
             .all()
         )
@@ -49,7 +57,9 @@ class PlayerRepository:
 
         return (
             self.db.query(Player)
-            .options(joinedload(Player.team))
+            .options(
+                joinedload(Player.team)
+            )
             .filter(Player.id == player_id)
             .first()
         )
@@ -61,8 +71,12 @@ class PlayerRepository:
 
         return (
             self.db.query(Player)
-            .options(joinedload(Player.team))
-            .filter(Player.full_name == full_name)
+            .options(
+                joinedload(Player.team)
+            )
+            .filter(
+                Player.full_name == full_name
+            )
             .first()
         )
 
@@ -73,7 +87,9 @@ class PlayerRepository:
 
         return (
             self.db.query(Player)
-            .options(joinedload(Player.team))
+            .options(
+                joinedload(Player.team)
+            )
             .filter(
                 Player.full_name.ilike(
                     f"%{keyword}%"
@@ -91,3 +107,49 @@ class PlayerRepository:
         self.db.delete(player)
 
         self.db.commit()
+
+    # ---------------------------------------------------------
+    # Analytics
+    # ---------------------------------------------------------
+
+    def players_by_position(
+        self,
+    ) -> list[tuple]:
+
+        return (
+            self.db.query(
+                Player.position,
+                func.count(Player.id),
+            )
+            .group_by(Player.position)
+            .order_by(
+                func.count(Player.id).desc()
+            )
+            .all()
+        )
+
+    def players_by_team(
+        self,
+    ) -> list[tuple]:
+
+        return (
+            self.db.query(
+                Team.name,
+                func.count(Player.id),
+            )
+            .join(Team)
+            .group_by(Team.name)
+            .order_by(
+                func.count(Player.id).desc()
+            )
+            .all()
+        )
+
+    def total_players(
+        self,
+    ) -> int:
+
+        return (
+            self.db.query(Player)
+            .count()
+        )

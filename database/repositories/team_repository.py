@@ -2,8 +2,12 @@
 Team repository.
 """
 
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import func
+from sqlalchemy.orm import Session
+from sqlalchemy.orm import joinedload
 
+from database.models import Organization
+from database.models import Player
 from database.models import Team
 
 
@@ -16,6 +20,10 @@ class TeamRepository:
     ) -> None:
 
         self.db = db
+
+    # ---------------------------------------------------------
+    # CRUD
+    # ---------------------------------------------------------
 
     def create(
         self,
@@ -30,11 +38,15 @@ class TeamRepository:
 
         return team
 
-    def get_all(self) -> list[Team]:
+    def get_all(
+        self,
+    ) -> list[Team]:
 
         return (
             self.db.query(Team)
-            .options(joinedload(Team.organization))
+            .options(
+                joinedload(Team.organization)
+            )
             .order_by(Team.name)
             .all()
         )
@@ -46,7 +58,9 @@ class TeamRepository:
 
         return (
             self.db.query(Team)
-            .options(joinedload(Team.organization))
+            .options(
+                joinedload(Team.organization)
+            )
             .filter(Team.name == name)
             .first()
         )
@@ -58,7 +72,9 @@ class TeamRepository:
 
         return (
             self.db.query(Team)
-            .options(joinedload(Team.organization))
+            .options(
+                joinedload(Team.organization)
+            )
             .filter(
                 Team.name.ilike(
                     f"%{keyword}%"
@@ -84,9 +100,78 @@ class TeamRepository:
 
         return (
             self.db.query(Team)
-            .options(joinedload(Team.organization))
+            .options(
+                joinedload(Team.organization)
+            )
             .filter(
                 Team.id == team_id
             )
             .first()
+        )
+
+    # ---------------------------------------------------------
+    # Analytics
+    # ---------------------------------------------------------
+
+    def teams_by_country(
+        self,
+    ) -> list[tuple]:
+
+        return (
+            self.db.query(
+                Team.country,
+                func.count(Team.id),
+            )
+            .group_by(Team.country)
+            .order_by(
+                func.count(Team.id).desc()
+            )
+            .all()
+        )
+
+    def teams_by_organization(
+        self,
+    ) -> list[tuple]:
+
+        return (
+            self.db.query(
+                Organization.name,
+                func.count(Team.id),
+            )
+            .join(Organization)
+            .group_by(
+                Organization.name
+            )
+            .order_by(
+                func.count(Team.id).desc()
+            )
+            .all()
+        )
+
+    def players_per_team(
+        self,
+    ) -> list[tuple]:
+
+        return (
+            self.db.query(
+                Team.name,
+                func.count(Player.id),
+            )
+            .outerjoin(Player)
+            .group_by(
+                Team.name
+            )
+            .order_by(
+                func.count(Player.id).desc()
+            )
+            .all()
+        )
+
+    def total_teams(
+        self,
+    ) -> int:
+
+        return (
+            self.db.query(Team)
+            .count()
         )

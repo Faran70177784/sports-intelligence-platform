@@ -38,11 +38,17 @@ def configure_application() -> None:
 def initialize_application() -> None:
     """
     Initialize application resources.
+
+    This runs only once per Streamlit session.
     """
 
     load_css()
 
-    initialize_database()
+    if "app_initialized" not in st.session_state:
+
+        initialize_database()
+
+        st.session_state["app_initialized"] = True
 
 
 def render_application() -> None:
@@ -51,6 +57,7 @@ def render_application() -> None:
     """
 
     MainLayout().render()
+
 
 def main() -> None:
     """
