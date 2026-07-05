@@ -83,7 +83,21 @@ class EventRepository:
     # Analytics
     # ---------------------------------------------------------
 
-    def events_by_type(self) -> list[tuple]:
+    def total_events(
+        self,
+    ) -> int:
+        """
+        Return total number of events.
+        """
+
+        return (
+            self.db.query(Event)
+            .count()
+        )
+
+    def events_by_type(
+        self,
+    ) -> list[tuple]:
 
         return (
             self.db.query(
@@ -91,7 +105,9 @@ class EventRepository:
                 func.count(Event.id),
             )
             .group_by(Event.event_type)
-            .order_by(func.count(Event.id).desc())
+            .order_by(
+                func.count(Event.id).desc()
+            )
             .all()
         )
 

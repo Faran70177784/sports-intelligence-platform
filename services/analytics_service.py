@@ -2,85 +2,215 @@
 Analytics business service.
 """
 
-from sqlalchemy import func
-
 from database.db import get_db
-from database.models import (
-    Event,
-    Match,
-    Organization,
-    Player,
-    Team,
+from database.repositories import (
+    EventRepository,
+    MatchRepository,
+    OrganizationRepository,
+    PlayerRepository,
+    TeamRepository,
 )
 
 
 class AnalyticsService:
     """Business logic for analytics."""
 
-    def dashboard_statistics(self) -> dict[str, int]:
+    # ---------------------------------------------------------
+    # Dashboard
+    # ---------------------------------------------------------
+
+    def dashboard_statistics(
+        self,
+    ) -> dict[str, int]:
         """
         Return dashboard KPI statistics.
         """
 
         with get_db() as db:
 
+            organization_repository = OrganizationRepository(db)
+            team_repository = TeamRepository(db)
+            player_repository = PlayerRepository(db)
+            match_repository = MatchRepository(db)
+            event_repository = EventRepository(db)
+
             return {
-                "organizations": db.query(Organization).count(),
-                "teams": db.query(Team).count(),
-                "players": db.query(Player).count(),
-                "matches": db.query(Match).count(),
-                "events": db.query(Event).count(),
+                "organizations": (
+                    organization_repository.total_organizations()
+                ),
+                "teams": (
+                    team_repository.total_teams()
+                ),
+                "players": (
+                    player_repository.total_players()
+                ),
+                "matches": (
+                    match_repository.total_matches()
+                ),
+                "events": (
+                    event_repository.total_events()
+                ),
             }
 
-    def event_distribution(self) -> list[tuple[str, int]]:
-        """
-        Return event distribution.
-        """
+    # ---------------------------------------------------------
+    # Organization Analytics
+    # ---------------------------------------------------------
+
+    def organizations_by_country(
+        self,
+    ) -> list[tuple]:
 
         with get_db() as db:
 
             return (
-                db.query(
-                    Event.event_type,
-                    func.count(Event.id),
-                )
-                .group_by(Event.event_type)
-                .all()
+                OrganizationRepository(db)
+                .organizations_by_country()
             )
 
-    def players_per_team(self) -> list[tuple[str, int]]:
-        """
-        Return number of players in each team.
-        """
+    def teams_per_organization(
+        self,
+    ) -> list[tuple]:
 
         with get_db() as db:
 
             return (
-                db.query(
-                    Team.name,
-                    func.count(Player.id),
-                )
-                .join(Player)
-                .group_by(Team.id)
-                .order_by(Team.name)
-                .all()
+                OrganizationRepository(db)
+                .teams_per_organization()
             )
 
-    def top_scorers(self) -> list[tuple[str, int]]:
-        """
-        Return players ranked by goals.
-        """
+    # ---------------------------------------------------------
+    # Team Analytics
+    # ---------------------------------------------------------
+
+    def teams_by_country(
+        self,
+    ) -> list[tuple]:
 
         with get_db() as db:
 
             return (
-                db.query(
-                    Player.full_name,
-                    func.count(Event.id),
-                )
-                .join(Event)
-                .filter(Event.event_type == "Goal")
-                .group_by(Player.id)
-                .order_by(func.count(Event.id).desc())
-                .all()
+                TeamRepository(db)
+                .teams_by_country()
+            )
+
+    def teams_by_organization(
+        self,
+    ) -> list[tuple]:
+
+        with get_db() as db:
+
+            return (
+                TeamRepository(db)
+                .teams_by_organization()
+            )
+
+    def players_per_team(
+        self,
+    ) -> list[tuple]:
+
+        with get_db() as db:
+
+            return (
+                TeamRepository(db)
+                .players_per_team()
+            )
+
+    # ---------------------------------------------------------
+    # Player Analytics
+    # ---------------------------------------------------------
+
+    def players_by_position(
+        self,
+    ) -> list[tuple]:
+
+        with get_db() as db:
+
+            return (
+                PlayerRepository(db)
+                .players_by_position()
+            )
+
+    def players_by_team(
+        self,
+    ) -> list[tuple]:
+
+        with get_db() as db:
+
+            return (
+                PlayerRepository(db)
+                .players_by_team()
+            )
+
+    # ---------------------------------------------------------
+    # Match Analytics
+    # ---------------------------------------------------------
+
+    def matches_by_year(
+        self,
+    ) -> list[tuple]:
+
+        with get_db() as db:
+
+            return (
+                MatchRepository(db)
+                .matches_by_year()
+            )
+
+    def matches_by_home_team(
+        self,
+    ) -> list[tuple]:
+
+        with get_db() as db:
+
+            return (
+                MatchRepository(db)
+                .matches_by_home_team()
+            )
+
+    # ---------------------------------------------------------
+    # Event Analytics
+    # ---------------------------------------------------------
+
+    def events_by_type(
+        self,
+    ) -> list[tuple]:
+
+        with get_db() as db:
+
+            return (
+                EventRepository(db)
+                .events_by_type()
+            )
+
+    def top_scorers(
+        self,
+    ) -> list[tuple]:
+
+        with get_db() as db:
+
+            return (
+                EventRepository(db)
+                .top_scorers()
+            )
+
+    def goals_by_team(
+        self,
+    ) -> list[tuple]:
+
+        with get_db() as db:
+
+            return (
+                EventRepository(db)
+                .goals_by_team()
+            )
+
+    def assists_by_player(
+        self,
+    ) -> list[tuple]:
+
+        with get_db() as db:
+
+            return (
+                EventRepository(db)
+                .assists_by_player()
             )
