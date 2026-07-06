@@ -37,7 +37,10 @@ class Sidebar:
 
         if user is not None:
 
-            st.sidebar.markdown("### 👤 Logged in as")
+            st.sidebar.markdown(
+                "### 👤 Logged in as"
+            )
+
             st.sidebar.markdown(
                 f"**{user['username']}**"
             )
@@ -45,7 +48,6 @@ class Sidebar:
             st.sidebar.caption(
                 user["role"]
             )
-            
 
             LogoutButton().render()
 
@@ -69,7 +71,11 @@ class Sidebar:
         )
 
         for item in MENU:
-            if f"{item.icon}  {item.title}" == selected:
+
+            if (
+                f"{item.icon}  {item.title}"
+                == selected
+            ):
                 return item.route
 
         return "dashboard"

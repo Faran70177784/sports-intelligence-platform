@@ -4,6 +4,8 @@ Sports Intelligence Platform
 Matches management page.
 """
 
+from datetime import date
+
 import streamlit as st
 
 from services.match_service import MatchService
@@ -20,8 +22,19 @@ def render() -> None:
 
     AppLayout.begin(
         title="Matches",
-        subtitle="Manage scheduled matches."
+        subtitle="Manage sports matches.",
     )
+
+    # --------------------------------------------------
+    # Search
+    # --------------------------------------------------
+
+    search = st.text_input(
+        "🔍 Search Match",
+        placeholder="Search by team name...",
+    )
+
+    st.divider()
 
     # --------------------------------------------------
     # Load Teams
@@ -32,7 +45,7 @@ def render() -> None:
     if len(teams) < 2:
 
         st.warning(
-            "Create at least two teams before creating matches."
+            "Please create at least two teams before creating matches."
         )
 
         AppLayout.end()
@@ -53,20 +66,19 @@ def render() -> None:
         home_team = st.selectbox(
             "Home Team",
             teams,
-            format_func=lambda team: team.name,
-            key="home_team",
+            format_func=lambda t: t.name,
         )
 
         away_team = st.selectbox(
             "Away Team",
             teams,
-            index=1 if len(teams) > 1 else 0,
-            format_func=lambda team: team.name,
-            key="away_team",
+            index=1,
+            format_func=lambda t: t.name,
         )
 
         match_date = st.date_input(
-            "Match Date"
+            "Match Date",
+            value=date.today(),
         )
 
         submitted = st.form_submit_button(
@@ -97,12 +109,23 @@ def render() -> None:
     st.divider()
 
     # --------------------------------------------------
-    # Match List
+    # Matches List
     # --------------------------------------------------
 
     st.subheader("📋 Matches")
 
     matches = match_service.get_all()
+
+    if search.strip():
+
+        keyword = search.lower()
+
+        matches = [
+            match
+            for match in matches
+            if keyword in match.home.name.lower()
+            or keyword in match.away.name.lower()
+        ]
 
     if not matches:
 
@@ -123,16 +146,12 @@ def render() -> None:
 
         for match in matches:
 
-            col1, col2, col3, col4 = st.columns(
-                [3, 3, 2, 1]
-            )
+            col1, col2, col3, col4 = st.columns([3, 3, 2, 1])
 
             col1.write(match.home.name)
             col2.write(match.away.name)
             col3.write(
-                match.match_date.strftime(
-                    "%d %b %Y"
-                )
+                match.match_date.strftime("%d %b %Y")
             )
 
             if col4.button(
@@ -140,9 +159,7 @@ def render() -> None:
                 key=f"delete_match_{match.id}",
             ):
 
-                match_service.delete(
-                    match.id
-                )
+                match_service.delete(match.id)
 
                 st.success(
                     "Match deleted successfully."
